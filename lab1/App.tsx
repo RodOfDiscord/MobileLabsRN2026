@@ -24,8 +24,7 @@ export default function App() {
           <Text style={styles.footerText} >Паламарчук Іван Сергійович 	ІПЗ-22-2</Text>
         </View>
       </NavigationContainer>
-      </SafeAreaView>
-      
+      </SafeAreaView>    
     </SafeAreaProvider>
   );
 }

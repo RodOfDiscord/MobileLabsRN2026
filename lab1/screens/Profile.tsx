@@ -5,19 +5,14 @@ import {
   View,
   TextInput,
   TouchableOpacity,  
-  StatusBar,
   ScrollView,
   KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 
 const Profile = () => {
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#121212" />
-      
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <View style={styles.container}>            
+      <KeyboardAvoidingView        
         style={{ flex: 1 }}
       >
         <ScrollView contentContainerStyle={styles.scrollContainer}>
