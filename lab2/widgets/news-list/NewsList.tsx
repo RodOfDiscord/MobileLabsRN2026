@@ -28,20 +28,16 @@ export const NewsList = ({ onPressItem }: Props) => {
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => <NewsCard news={item} onPress={onPressItem} />}
 
-      // Візуальні компоненти
       ListHeaderComponent={<Header />}
       ListFooterComponent={<Footer loading={loadingMore} />}
       ItemSeparatorComponent={Separator}
 
-      // Pull-to-Refresh
       refreshing={refreshing}
       onRefresh={refresh}
 
-      // Infinite Scroll
       onEndReached={loadMore}
       onEndReachedThreshold={0.5}
 
-      // Оптимізація
       initialNumToRender={10}
       maxToRenderPerBatch={10}
       windowSize={5}
