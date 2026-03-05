@@ -7,7 +7,7 @@ interface Props {
 }
 const Header = () => (
   <View style={styles.header}>
-    <Text style={styles.headerTitle}>Новини</Text>
+    <Text style={styles.headerTitle}>Список новин</Text>
   </View>
 );
 
@@ -25,7 +25,7 @@ export const NewsList = ({ onPressItem }: Props) => {
   return (
     <FlatList<News>
       data={news}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => <NewsCard news={item} onPress={onPressItem} />}
 
       ListHeaderComponent={<Header />}
