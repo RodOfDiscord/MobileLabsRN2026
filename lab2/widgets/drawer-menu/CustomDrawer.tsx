@@ -12,8 +12,8 @@ export const CustomDrawer = ({ navigation }: DrawerContentComponentProps) => (
         source={{ uri: 'https://robohash.org/democat?set=set4' }}
         style={styles.avatar}
       />
-      <Text style={styles.name}>Іван Іваненко</Text>
-      <Text style={styles.group}>Група: КН-21</Text>
+      <Text style={styles.name}>Іван Паламарчук</Text>
+      <Text style={styles.group}>Група: ІПЗ-22-2</Text>
     </View>
 
     {/* Меню */}
