@@ -22,14 +22,11 @@ export function useGameGestures(onTapForCps?: () => void) {
     activatePinch,
   } = useGameParams();
 
-  // Separate scale values: tap feedback vs pinch scale
   const tapScale = useSharedValue(1);
   const pinchScale = useSharedValue(1);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const rotation = useSharedValue(0);
-
-  // --- JS handlers ---
 
   const handleTap = useCallback(() => {
     addScore(1);
@@ -38,10 +35,8 @@ export function useGameGestures(onTapForCps?: () => void) {
   }, [addScore, incrementTap, onTapForCps]);
 
   const handleDoubleTap = useCallback(() => {
-    addScore(2);
     incrementDoubleTap();
-    onTapForCps?.();
-  }, [addScore, incrementDoubleTap, onTapForCps]);
+  }, [incrementDoubleTap]);
 
   const handleLongPress = useCallback(() => {
     addScore(5);
@@ -67,9 +62,6 @@ export function useGameGestures(onTapForCps?: () => void) {
     activatePinch();
   }, [addScore, activatePinch]);
 
-  // --- Gesture definitions ---
-
-  // Single tap fires immediately — no Exclusive, no waiting
   const tap = Gesture.Tap()
     .maxDuration(200)
     .onStart(() => {
@@ -81,7 +73,6 @@ export function useGameGestures(onTapForCps?: () => void) {
       scheduleOnRN(handleTap);
     });
 
-  // Double tap — runs simultaneously with single tap, both fire on double tap
   const doubleTap = Gesture.Tap()
     .numberOfTaps(2)
     .maxDuration(200)
@@ -145,10 +136,6 @@ export function useGameGestures(onTapForCps?: () => void) {
       scheduleOnRN(handlePinch);
     });
 
-  // Composition:
-  // - doubleTap and tap run Simultaneously so single tap fires immediately
-  // - pan and pinch are Simultaneous (multi-touch drag + scale)
-  // - flings and longPress Race against the tap group
   const taps = Gesture.Simultaneous(doubleTap, tap);
 
   const composedGesture = Gesture.Simultaneous(

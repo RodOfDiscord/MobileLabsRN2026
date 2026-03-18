@@ -30,7 +30,7 @@ export default function ClickerObject({ onTapForCps }: ClickerObjectProps) {
           className="w-48 h-48 rounded-full bg-blue-500 items-center justify-center shadow-2xl elevation-xl"
           style={style}
         >
-          <View className="w-40 h-40 rounded-full border-4 border-blue-400 items-center justify-center">
+          <View className="w-40 h-40 rounded-full items-center justify-center">
             <MaterialIcons name="ads-click" size={64} color="white" />
             <Text className="text-white font-bold text-lg mt-2 tracking-widest text-center">
               Tap Me
