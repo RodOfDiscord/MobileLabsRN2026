@@ -1,93 +1,92 @@
 import * as FileSystem from "expo-file-system/legacy";
-import { useCallback } from "react";
 import { FileItem, MemoryInfo } from "../types";
 
+// useCallback з [] тут нічого не дає — функції не залежать від стану компонента
+const joinPath = (base: string, name: string) =>
+  `${base}${base.endsWith("/") ? "" : "/"}${name}`;
+
 export const useFileSystem = () => {
-  const getMemoryStats = useCallback(async (): Promise<MemoryInfo> => {
+  const getMemoryStats = async (): Promise<MemoryInfo> => {
     try {
-      const free = await FileSystem.getFreeDiskStorageAsync();
-      const total = await FileSystem.getTotalDiskCapacityAsync();
+      const [free, total] = await Promise.all([
+        FileSystem.getFreeDiskStorageAsync(),
+        FileSystem.getTotalDiskCapacityAsync(),
+      ]);
       return { free, total };
     } catch (e) {
       console.error("Error getting memory stats", e);
       return { free: 0, total: 0 };
     }
-  }, []);
+  };
 
-  const readDirectory = useCallback(
-    async (uri: string): Promise<FileItem[]> => {
-      try {
-        const files = await FileSystem.readDirectoryAsync(uri);
-        const fileItems: FileItem[] = [];
-
-        for (const file of files) {
-          const fileUri = `${uri}${uri.endsWith("/") ? "" : "/"}${file}`;
+  const readDirectory = async (uri: string): Promise<FileItem[]> => {
+    try {
+      const files = await FileSystem.readDirectoryAsync(uri);
+      const fileItems = await Promise.all(
+        files.map(async (file) => {
+          const fileUri = joinPath(uri, file);
           const info = await FileSystem.getInfoAsync(fileUri);
-
-          fileItems.push({
+          return {
             name: file,
             uri: fileUri,
             isDirectory: info.exists ? info.isDirectory : false,
             size: info.exists ? info.size : undefined,
             modificationTime: info.exists ? info.modificationTime : undefined,
-          });
-        }
+          };
+        }),
+      );
+      return fileItems.sort((a, b) => {
+        if (a.isDirectory !== b.isDirectory) return a.isDirectory ? -1 : 1;
+        return a.name.localeCompare(b.name);
+      });
+    } catch (e) {
+      console.error("Error reading directory", e);
+      return [];
+    }
+  };
 
-        // Sort: folders first, then alphabetical
-        return fileItems.sort((a, b) => {
-          if (a.isDirectory && !b.isDirectory) return -1;
-          if (!a.isDirectory && b.isDirectory) return 1;
-          return a.name.localeCompare(b.name);
-        });
-      } catch (e) {
-        console.error("Error reading directory", e);
-        return [];
-      }
-    },
-    [],
-  );
+  const createFolder = async (parentUri: string, folderName: string) => {
+    try {
+      await FileSystem.makeDirectoryAsync(joinPath(parentUri, folderName), {
+        intermediates: true,
+      });
+      return true;
+    } catch (e) {
+      console.error("Error creating folder", e);
+      return false;
+    }
+  };
 
-  const createFolder = useCallback(
-    async (parentUri: string, folderName: string) => {
-      try {
-        const newUri = `${parentUri}${parentUri.endsWith("/") ? "" : "/"}${folderName}`;
-        await FileSystem.makeDirectoryAsync(newUri, { intermediates: true });
-        return true;
-      } catch (e) {
-        console.error("Error creating folder", e);
-        return false;
-      }
-    },
-    [],
-  );
+  const createFile = async (
+    parentUri: string,
+    fileName: string,
+    content = "",
+  ) => {
+    try {
+      const nameWithExt = fileName.endsWith(".txt")
+        ? fileName
+        : `${fileName}.txt`;
+      await FileSystem.writeAsStringAsync(
+        joinPath(parentUri, nameWithExt),
+        content,
+      );
+      return true;
+    } catch (e) {
+      console.error("Error creating file", e);
+      return false;
+    }
+  };
 
-  const createFile = useCallback(
-    async (parentUri: string, fileName: string, content: string = "") => {
-      try {
-        const nameWithExt = fileName.endsWith(".txt")
-          ? fileName
-          : `${fileName}.txt`;
-        const newUri = `${parentUri}${parentUri.endsWith("/") ? "" : "/"}${nameWithExt}`;
-        await FileSystem.writeAsStringAsync(newUri, content);
-        return true;
-      } catch (e) {
-        console.error("Error creating file", e);
-        return false;
-      }
-    },
-    [],
-  );
-
-  const readFile = useCallback(async (uri: string): Promise<string> => {
+  const readFile = async (uri: string): Promise<string> => {
     try {
       return await FileSystem.readAsStringAsync(uri);
     } catch (e) {
       console.error("Error reading file", e);
       return "";
     }
-  }, []);
+  };
 
-  const modifyFile = useCallback(async (uri: string, content: string) => {
+  const modifyFile = async (uri: string, content: string) => {
     try {
       await FileSystem.writeAsStringAsync(uri, content);
       return true;
@@ -95,9 +94,9 @@ export const useFileSystem = () => {
       console.error("Error modifying file", e);
       return false;
     }
-  }, []);
+  };
 
-  const deleteItem = useCallback(async (uri: string) => {
+  const deleteItem = async (uri: string) => {
     try {
       await FileSystem.deleteAsync(uri, { idempotent: true });
       return true;
@@ -105,16 +104,16 @@ export const useFileSystem = () => {
       console.error("Error deleting item", e);
       return false;
     }
-  }, []);
+  };
 
-  const getFileInfo = useCallback(async (uri: string) => {
+  const getFileInfo = async (uri: string) => {
     try {
       return await FileSystem.getInfoAsync(uri);
     } catch (e) {
       console.error("Error getting file info", e);
       return null;
     }
-  }, []);
+  };
 
   return {
     getMemoryStats,
