@@ -4,25 +4,18 @@ import {
   TextInput,
   TouchableOpacity,
   Text,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useFileSystem } from "../hooks/useFileSystem";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import { useFileSystem } from "../hooks/useFileSystem";
+import { LoadingScreen } from "../components/LoadingScreen";
+import { EditorScreenProps } from "../types";
 
-type RootStackParamList = {
-  Home: undefined;
-  Editor: { uri: string; name: string };
-  Details: { uri: string; name: string };
-};
-
-type Props = NativeStackScreenProps<RootStackParamList, "Editor">;
-
-export default function EditorScreen({ route, navigation }: Props) {
+export default function EditorScreen({ route, navigation }: EditorScreenProps) {
   const { uri, name } = route.params;
+  const insets = useSafeAreaInsets();
   const { readFile, modifyFile } = useFileSystem();
 
   const [content, setContent] = useState("");
@@ -31,35 +24,26 @@ export default function EditorScreen({ route, navigation }: Props) {
 
   useEffect(() => {
     navigation.setOptions({ title: name });
-    loadContent();
-  }, [uri, name]);
-
-  const loadContent = async () => {
-    setIsLoading(true);
-    const text = await readFile(uri);
-    setContent(text);
-    setIsLoading(false);
-  };
+    readFile(uri).then((text) => {
+      setContent(text);
+      setIsLoading(false);
+    });
+  }, []);
 
   const handleSave = async () => {
     setIsSaving(true);
     const success = await modifyFile(uri, content);
     setIsSaving(false);
-    if (success) {
-      navigation.goBack();
-    }
+    if (success) navigation.goBack();
   };
 
-  if (isLoading) {
-    return (
-      <View className="flex-1 justify-center items-center bg-slate-50">
-        <ActivityIndicator size="large" color="#3b82f6" />
-      </View>
-    );
-  }
+  if (isLoading) return <LoadingScreen />;
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50">
+    <View
+      className="flex-1 bg-slate-50"
+      style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+    >
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         className="flex-1 p-4"
@@ -82,7 +66,7 @@ export default function EditorScreen({ route, navigation }: Props) {
           activeOpacity={0.8}
         >
           {isSaving ? (
-            <ActivityIndicator color="#ffffff" className="mr-2" />
+            <Text className="text-white font-bold text-base">Збереження…</Text>
           ) : (
             <View className="flex-row items-center">
               <Ionicons name="save-outline" size={20} color="white" />
@@ -93,6 +77,6 @@ export default function EditorScreen({ route, navigation }: Props) {
           )}
         </TouchableOpacity>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }

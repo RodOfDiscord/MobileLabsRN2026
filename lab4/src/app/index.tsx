@@ -1,15 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  FlatList,
-  ActivityIndicator,
-  TouchableOpacity,
-  Text,
-} from "react-native";
+import { View, FlatList, TouchableOpacity, Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import * as FileSystem from "expo-file-system/legacy";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 
 import { useFileSystem } from "../hooks/useFileSystem";
@@ -18,17 +11,10 @@ import { Breadcrumb } from "../components/Breadcrumb";
 import { FileItem } from "../components/FileItem";
 import { CreateModal } from "../components/CreateModal";
 import { ConfirmModal } from "../components/ConfirmModal";
-import { FileItem as IFileItem, MemoryInfo } from "../types";
+import { FileItem as IFileItem, MemoryInfo, HomeScreenProps } from "../types";
+import { LoadingScreen } from "../components/LoadingScreen";
 
-type RootStackParamList = {
-  Home: undefined;
-  Editor: { uri: string; name: string };
-  Details: { uri: string; name: string };
-};
-
-type Props = NativeStackScreenProps<RootStackParamList, "Home">;
-
-export default function HomeScreen({ navigation }: Props) {
+export default function HomeScreen({ navigation }: HomeScreenProps) {
   const {
     getMemoryStats,
     readDirectory,
@@ -174,9 +160,7 @@ export default function HomeScreen({ navigation }: Props) {
       </View>
 
       {isLoading ? (
-        <View key="loading" className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color="#3b82f6" />
-        </View>
+        <LoadingScreen />
       ) : fileList.length === 0 ? (
         <View
           key="empty"
