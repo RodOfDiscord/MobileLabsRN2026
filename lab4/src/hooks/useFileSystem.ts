@@ -1,7 +1,6 @@
 import * as FileSystem from "expo-file-system/legacy";
 import { FileItem, MemoryInfo } from "../types";
 
-// useCallback з [] тут нічого не дає — функції не залежать від стану компонента
 const joinPath = (base: string, name: string) =>
   `${base}${base.endsWith("/") ? "" : "/"}${name}`;
 
