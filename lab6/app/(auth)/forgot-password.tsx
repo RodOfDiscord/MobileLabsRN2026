@@ -1,33 +1,33 @@
-import React, { useState } from 'react';
+import CustomButton from "@/components/CustomButton";
+import CustomInput from "@/components/CustomInput";
+import { auth } from "@/firebase/config";
+import { useRouter } from "expo-router";
+import { sendPasswordResetEmail } from "firebase/auth";
+import React, { useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StyleSheet,
+  Text,
   TouchableOpacity,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '@/firebase/config';
-import CustomInput from '@/components/CustomInput';
-import CustomButton from '@/components/CustomButton';
+  View,
+} from "react-native";
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
   async function handleReset() {
     if (!email.trim()) {
-      setError('Please enter your email address.');
+      setError("Please enter your email address.");
       return;
     }
 
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
@@ -37,7 +37,7 @@ export default function ForgotPasswordScreen() {
       const message =
         err instanceof Error
           ? err.message
-          : 'Failed to send reset email. Please try again.';
+          : "Failed to send reset email. Please try again.";
       setError(message);
     } finally {
       setLoading(false);
@@ -47,14 +47,13 @@ export default function ForgotPasswordScreen() {
   return (
     <KeyboardAvoidingView
       style={styles.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Text style={styles.logo}>📧</Text>
           <Text style={styles.title}>Reset Password</Text>
           <Text style={styles.subtitle}>
             We&apos;ll send you a link to reset your password
@@ -63,7 +62,6 @@ export default function ForgotPasswordScreen() {
 
         {success ? (
           <View style={styles.successBox}>
-            <Text style={styles.successIcon}>✅</Text>
             <Text style={styles.successTitle}>Email Sent!</Text>
             <Text style={styles.successText}>
               Check your inbox for a password reset link. It may take a few
@@ -111,52 +109,48 @@ export default function ForgotPasswordScreen() {
 const styles = StyleSheet.create({
   flex: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: "#111827",
   },
   container: {
     flexGrow: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingHorizontal: 28,
     paddingVertical: 40,
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 36,
-  },
-  logo: {
-    fontSize: 48,
-    marginBottom: 12,
   },
   title: {
     fontSize: 28,
-    fontWeight: '700',
-    color: '#F9FAFB',
+    fontWeight: "700",
+    color: "#F9FAFB",
     letterSpacing: 0.3,
   },
   subtitle: {
     fontSize: 15,
-    color: '#9CA3AF',
+    color: "#9CA3AF",
     marginTop: 6,
-    textAlign: 'center',
+    textAlign: "center",
     paddingHorizontal: 20,
   },
   form: {
     marginBottom: 24,
   },
   error: {
-    color: '#EF4444',
+    color: "#EF4444",
     fontSize: 13,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 12,
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    backgroundColor: "rgba(239, 68, 68, 0.1)",
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 8,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   successBox: {
-    alignItems: 'center',
-    backgroundColor: '#1F2937',
+    alignItems: "center",
+    backgroundColor: "#1F2937",
     borderRadius: 16,
     padding: 28,
     marginBottom: 24,
@@ -167,22 +161,22 @@ const styles = StyleSheet.create({
   },
   successTitle: {
     fontSize: 20,
-    fontWeight: '700',
-    color: '#34D399',
+    fontWeight: "700",
+    color: "#34D399",
     marginBottom: 8,
   },
   successText: {
     fontSize: 14,
-    color: '#D1D5DB',
-    textAlign: 'center',
+    color: "#D1D5DB",
+    textAlign: "center",
     lineHeight: 20,
   },
   footer: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   footerLink: {
-    color: '#6C63FF',
+    color: "#6C63FF",
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });
