@@ -6,3 +6,4 @@
 - [Lab 3 — Використання кастомних жестів у React Native та стилізація інтерфейсу мобільного застосунку.](lab3/)
 - [Lab 4 — Робота з файловою системою в React Native з використанням бібліотеки expo-file-system](lab4/)
 - [Lab 5 — Побудова навігації у React Native із використанням бібліотеки Expo Router](lab5/)
+- [Lab 6 — Побудова авторизації та збереження персональних даних у React Native з використанням Firebase Authentication та Firestore](lab6/)
